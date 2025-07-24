@@ -6,7 +6,8 @@ function App() {
   useEffect(() => {
     fetch('/api')
       .then(response => response.json())
-      .then(data => setMessage(data.message));
+      .then(data => setMessage(data.message))
+      .catch(error => console.error('Error fetching API:', error));
   }, []);
 
   return (
