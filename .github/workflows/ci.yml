@@ -25,21 +25,21 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker-compose build
+          docker-compose -f docker-compose.yml build
 
       - name: Run containers
         run: |
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up -d
           sleep 10
 
       - name: Test backend API
         run: |
           curl --fail http://localhost:5000/api
-          docker-compose down
+          docker-compose -f docker-compose.yml down
 
       - name: Test frontend
         run: |
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up -d
           sleep 10
           curl --fail http://localhost:3000
-          docker-compose down
+          docker-compose -f docker-compose.yml down
