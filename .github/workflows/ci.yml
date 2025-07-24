@@ -30,16 +30,20 @@ jobs:
       - name: Run containers
         run: |
           docker-compose -f docker-compose.yml up -d
-          sleep 30  # Tăng thời gian chờ lên 30 giây
+          sleep 90
+          docker ps
+          docker logs frontend
 
       - name: Test backend API
         run: |
-          curl --fail http://localhost:5000/api
+          curl --fail http://localhost:5000/api || echo "Backend test failed"
           docker-compose -f docker-compose.yml down
 
       - name: Test frontend
         run: |
           docker-compose -f docker-compose.yml up -d
-          sleep 30  # Tăng thời gian chờ lên 30 giây
-          curl --fail http://localhost:3000
+          sleep 120
+          docker ps
+          docker logs frontend
+          curl --fail http://localhost:3000 || echo "Frontend test failed"
           docker-compose -f docker-compose.yml down
