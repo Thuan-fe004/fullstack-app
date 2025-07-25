@@ -1,47 +1,36 @@
+version: '3.8'
 services:
   backend:
     build: ./backend
-    container_name: backend
     ports:
       - "5000:5000"
-    environment:
-      - FLASK_ENV=development
-    volumes:
-      - ./backend:/app
     networks:
       - app-network
-
   frontend:
     build: ./frontend
-    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
     environment:
-      - NODE_ENV=development
-    volumes:
-      - ./frontend:/app
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_OPTIONS=--max_old_space_size=4096
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     networks:
       - app-network
-
   db:
-    image: postgres:13
-    container_name: db
+    image: postgres:latest
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
     networks:
       - app-network
-
-volumes:
-  pgdata:
-
 networks:
   app-network:
     driver: bridge

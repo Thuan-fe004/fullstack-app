@@ -27,23 +27,34 @@ jobs:
         run: |
           docker-compose -f docker-compose.yml build
 
-      - name: Run containers
+      - name: Run unit tests for frontend
+        run: |
+          cd frontend
+          npm install
+          npm test
+
+      - name: Run unit tests for backend
+        run: |
+          cd backend
+          python -m pip install -r requirements.txt
+          python -m pytest
+
+      - name: Run containers for integration tests
         run: |
           docker-compose -f docker-compose.yml up -d
           sleep 90
           docker ps
           docker logs frontend
+          docker logs backend
 
       - name: Test backend API
         run: |
           curl --fail http://localhost:5000/api || echo "Backend test failed"
-          docker-compose -f docker-compose.yml down
 
       - name: Test frontend
         run: |
-          docker-compose -f docker-compose.yml up -d
-          sleep 120
-          docker ps
-          docker logs frontend
           curl --fail http://localhost:3000 || echo "Frontend test failed"
+
+      - name: Stop containers
+        run: |
           docker-compose -f docker-compose.yml down
